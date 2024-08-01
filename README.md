@@ -1,5 +1,4 @@
-ANFIS Model: Predicting 4-Hour Event Risk
-# Project Name
+# ANFIS Model: Predicting 4-Hour Event Risk
 
 This project aims to develop an ensemble model to predict the likelihood of an event happening within 4 hours using a combination of Neural Networks and XGBoost classifiers. The model takes a variety of patient vitals and features to produce a probability score which is then used to determine the risk level.
 
