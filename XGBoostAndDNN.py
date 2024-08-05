@@ -153,6 +153,8 @@ def train_xgboost(X, y):
     
     return best_xgb
 
+### rebuild this bit
+
 def get_ensemble_prediction(nn_model, xgb_model, X):
     nn_pred = nn_model.predict(X)
     xgb_pred = xgb_model.predict_proba(X)[:, 1]
