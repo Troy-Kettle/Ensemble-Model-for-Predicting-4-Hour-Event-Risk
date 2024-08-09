@@ -10,12 +10,10 @@ from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, Input, c
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.regularizers import l1_l2
-from imblearn.over_sampling import SMOTE
 from xgboost import XGBClassifier
 from optuna import create_study
 from optuna.integration import TFKerasPruningCallback
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 def load_and_preprocess_data(file_path):
     data = pd.read_excel(file_path)
@@ -23,11 +21,6 @@ def load_and_preprocess_data(file_path):
     # Advanced imputation
     imputer = KNNImputer(n_neighbors=5)
     data_imputed = pd.DataFrame(imputer.fit_transform(data), columns=data.columns)
-    
-    # Feature engineering
-    data_imputed['BP_RATIO'] = data_imputed['SYSTOLIC_BP'] / data_imputed['HEART_RATE']
-    data_imputed['TEMP_HR_RATIO'] = data_imputed['TEMPERATURE'] / data_imputed['HEART_RATE']
-    data_imputed['O2_HEART_PRODUCT'] = data_imputed['O2_SATS'] * data_imputed['HEART_RATE']
     
     X = data_imputed.drop('4_HOURS_FROM_ANNOTATED_EVENT', axis=1)
     y = data_imputed['4_HOURS_FROM_ANNOTATED_EVENT']
@@ -153,8 +146,6 @@ def train_xgboost(X, y):
     
     return best_xgb
 
-### rebuild this bit
-
 def get_ensemble_prediction(nn_model, xgb_model, X):
     nn_pred = nn_model.predict(X)
     xgb_pred = xgb_model.predict_proba(X)[:, 1]
@@ -221,7 +212,7 @@ def main():
     plot_performance(history)
 
     # Example user input
-    user_input = [180, 120, 20, 95, 39.5, 120/180, 39.5/180]
+    user_input = [180, 120, 20, 95, 39.5]
     user_input_poly = poly.transform([user_input])
     user_input_selected = selector.transform(user_input_poly)
     user_input_scaled = scaler.transform(user_input_selected)
@@ -230,7 +221,7 @@ def main():
     print(f"\nPredicted likelihood of event happening: {membership_value:.2f}")
 
     event_chance = ts_controller_from_ensemble(membership_value)
-    print(f"Chance of event happening: {event_chance:.2f}%")
+    print(f"Chance of event happening: {event_chance}%")
 
 if __name__ == '__main__':
     main()
